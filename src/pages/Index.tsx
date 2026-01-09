@@ -1,44 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, PenTool, Sparkles, Users, Star, TrendingUp } from 'lucide-react';
+import { PenTool, Sparkles, Users, Star, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { NovelCard } from '@/components/novels/NovelCard';
-
-// Sample featured novels data
-const featuredNovels = [
-  {
-    id: '1',
-    title: 'The Eternal Wanderer',
-    description: 'A tale of an immortal soul traveling through dimensions...',
-    coverUrl: null,
-    genre: 'Fantasy',
-    views: 12500,
-    chapters: 145,
-    author: 'StarWriter93',
-  },
-  {
-    id: '2',
-    title: 'Shadows of Tomorrow',
-    description: 'In a world where time is currency, one woman dares to steal it all...',
-    coverUrl: null,
-    genre: 'Sci-Fi',
-    views: 8700,
-    chapters: 89,
-    author: 'NightOwl',
-  },
-  {
-    id: '3',
-    title: 'Dragon Heart Chronicles',
-    description: 'The last dragon rider awakens to a world that forgot magic...',
-    coverUrl: null,
-    genre: 'Epic Fantasy',
-    views: 23400,
-    chapters: 312,
-    author: 'FirescaleWriter',
-  },
-];
 
 export default function Index() {
   const { t } = useLanguage();
@@ -100,10 +65,10 @@ export default function Index() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Link to="/novels">
+              <Link to="/diary">
                 <Button size="lg" className="gap-2 text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 animate-glow-pulse">
-                  <BookOpen className="w-5 h-5" />
-                  {t('hero.explore')}
+                  <PenTool className="w-5 h-5" />
+                  {t('nav.diary')}
                 </Button>
               </Link>
               <Link to="/auth?mode=signup">
@@ -112,7 +77,7 @@ export default function Index() {
                   variant="outline"
                   className="gap-2 text-lg px-8 py-6 border-primary/50 text-primary hover:bg-primary/10"
                 >
-                  <PenTool className="w-5 h-5" />
+                  <Sparkles className="w-5 h-5" />
                   {t('hero.start_writing')}
                 </Button>
               </Link>
@@ -146,10 +111,10 @@ export default function Index() {
             viewport={{ once: true }}
           >
             {[
-              { icon: BookOpen, value: '10K+', label: 'Novels' },
+              { icon: PenTool, value: '10K+', label: 'Diary Entries' },
               { icon: Users, value: '50K+', label: 'Writers' },
-              { icon: Star, value: '1M+', label: 'Chapters' },
-              { icon: TrendingUp, value: '5M+', label: 'Readers' },
+              { icon: Star, value: '1M+', label: 'Words Written' },
+              { icon: BookOpen, value: '5M+', label: 'Stories Told' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -168,52 +133,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Featured Novels Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-display text-foreground mb-4">
-              {t('novels.featured')}
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover the most captivating stories from our community of talented writers
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredNovels.map((novel, index) => (
-              <motion.div
-                key={novel.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <NovelCard novel={novel} />
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            className="text-center mt-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <Link to="/novels">
-              <Button variant="outline" size="lg" className="border-primary/50 text-primary hover:bg-primary/10">
-                View All Novels
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5" />
@@ -228,7 +147,7 @@ export default function Index() {
               Start Your Cosmic Journey
             </h2>
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              Join thousands of writers and readers in the most immersive webnovel platform. Your story awaits among the stars.
+              Join thousands of writers keeping their private diaries among the stars. Your story awaits in the cosmos.
             </p>
             <Link to="/auth?mode=signup">
               <Button size="lg" className="px-8 py-6 text-lg bg-primary text-primary-foreground hover:bg-primary/90">
