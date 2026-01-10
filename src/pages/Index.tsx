@@ -111,10 +111,10 @@ export default function Index() {
             viewport={{ once: true }}
           >
             {[
-              { icon: PenTool, value: '10K+', label: 'Diary Entries' },
-              { icon: Users, value: '50K+', label: 'Writers' },
-              { icon: Star, value: '1M+', label: 'Words Written' },
-              { icon: BookOpen, value: '5M+', label: 'Stories Told' },
+              { icon: PenTool, value: '0', label: 'Diary Entries' },
+              { icon: Users, value: '0', label: 'Writers' },
+              { icon: Star, value: '0', label: 'Words Written' },
+              { icon: BookOpen, value: '0', label: 'Stories Told' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -164,7 +164,7 @@ export default function Index() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-2xl font-display text-primary gold-glow">Nibiru93.net</div>
             <p className="text-muted-foreground text-sm">
-              © 2024 Nibiru93.net. All rights reserved.
+              © 2026 Nibiru93.net. All rights reserved.
             </p>
           </div>
         </div>
