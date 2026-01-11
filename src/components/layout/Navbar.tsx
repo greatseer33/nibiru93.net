@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, PenTool, User, LogOut } from 'lucide-react';
+import { Menu, X, PenTool, User, LogOut, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,7 +20,10 @@ export function Navbar() {
 
   const navLinks = [
     { to: '/', label: t('nav.home'), icon: null },
-    ...(user ? [{ to: '/diary', label: t('nav.diary'), icon: PenTool }] : []),
+    ...(user ? [
+      { to: '/diary', label: t('nav.diary'), icon: PenTool },
+      { to: '/stories', label: 'Stories', icon: BookOpen },
+    ] : []),
   ];
 
   return (
@@ -57,6 +60,12 @@ export function Navbar() {
             
             {user ? (
               <div className="flex items-center gap-3">
+                <Link to="/stories">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Stories
+                  </Button>
+                </Link>
                 <Link to="/diary">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <PenTool className="w-4 h-4" />
@@ -121,6 +130,12 @@ export function Navbar() {
 
                 {user ? (
                   <div className="flex flex-col gap-2 pt-2">
+                    <Link to="/stories" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        Stories
+                      </Button>
+                    </Link>
                     <Link to="/diary" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
                         <PenTool className="w-4 h-4" />

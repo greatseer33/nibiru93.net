@@ -182,6 +182,39 @@ export type Database = {
         }
         Relationships: []
       }
+      stories: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_public: boolean
+          title: string
+          updated_at: string
+          user_id: string
+          word_count: number
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+          word_count?: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+          word_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
