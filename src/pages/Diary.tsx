@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, PenTool, Trash2, Edit2, Save, X, Smile, Meh, Frown, Heart, Sparkles } from 'lucide-react';
+import { Plus, PenTool, Trash2, Edit2, Save, X, Smile, Meh, Frown, Heart, Sparkles, Pin } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ interface DiaryEntry {
   title: string;
   content: string;
   mood: string | null;
+  is_pinned: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -59,6 +60,7 @@ export default function Diary() {
     const { data, error } = await supabase
       .from('diary_entries')
       .select('*')
+      .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -67,6 +69,24 @@ export default function Diary() {
       setEntries(data || []);
     }
     setLoading(false);
+  };
+
+  const handleTogglePin = async (id: string, currentPinned: boolean) => {
+    const { error } = await supabase
+      .from('diary_entries')
+      .update({ is_pinned: !currentPinned })
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Failed to update pin status');
+    } else {
+      setEntries(entries.map(e => e.id === id ? { ...e, is_pinned: !currentPinned } : e)
+        .sort((a, b) => {
+          if (a.is_pinned !== b.is_pinned) return b.is_pinned ? 1 : -1;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }));
+      toast.success(currentPinned ? 'Entry unpinned' : 'Entry pinned!');
+    }
   };
 
   const handleCreateEntry = async () => {
@@ -256,6 +276,7 @@ export default function Diary() {
                     onCancelEdit={() => setEditingId(null)}
                     onSave={(title, content, mood) => handleUpdateEntry(entry.id, title, content, mood)}
                     onDelete={() => handleDeleteEntry(entry.id)}
+                    onTogglePin={() => handleTogglePin(entry.id, entry.is_pinned)}
                     t={t}
                   />
                 ))}
@@ -277,10 +298,11 @@ interface DiaryEntryCardProps {
   onCancelEdit: () => void;
   onSave: (title: string, content: string, mood: string) => void;
   onDelete: () => void;
+  onTogglePin: () => void;
   t: (key: string) => string;
 }
 
-function DiaryEntryCard({ entry, index, isEditing, onEdit, onCancelEdit, onSave, onDelete, t }: DiaryEntryCardProps) {
+function DiaryEntryCard({ entry, index, isEditing, onEdit, onCancelEdit, onSave, onDelete, onTogglePin, t }: DiaryEntryCardProps) {
   const [editTitle, setEditTitle] = useState(entry.title);
   const [editContent, setEditContent] = useState(entry.content);
   const [editMood, setEditMood] = useState(entry.mood || 'neutral');
@@ -290,7 +312,7 @@ function DiaryEntryCard({ entry, index, isEditing, onEdit, onCancelEdit, onSave,
 
   return (
     <motion.div
-      className="glass-card rounded-xl p-6"
+      className={`glass-card rounded-xl p-6 ${entry.is_pinned ? 'ring-2 ring-primary/50' : ''}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -351,6 +373,15 @@ function DiaryEntryCard({ entry, index, isEditing, onEdit, onCancelEdit, onSave,
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onTogglePin}
+                className={entry.is_pinned ? 'text-primary' : ''}
+                title={entry.is_pinned ? 'Unpin entry' : 'Pin entry'}
+              >
+                <Pin className={`w-4 h-4 ${entry.is_pinned ? 'fill-current' : ''}`} />
+              </Button>
               <Button variant="ghost" size="icon" onClick={onEdit}>
                 <Edit2 className="w-4 h-4" />
               </Button>

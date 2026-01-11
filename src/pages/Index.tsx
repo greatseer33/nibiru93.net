@@ -1,12 +1,50 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PenTool, Sparkles, Users, Star, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Index() {
   const { t } = useLanguage();
+  const [stats, setStats] = useState({
+    diaryEntries: 0,
+    writers: 0,
+    wordsWritten: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      // Fetch total diary entries count
+      const { count: entriesCount } = await supabase
+        .from('diary_entries')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch unique writers count
+      const { count: writersCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch all entries to count words
+      const { data: entries } = await supabase
+        .from('diary_entries')
+        .select('content');
+
+      const totalWords = entries?.reduce((acc, entry) => {
+        return acc + (entry.content?.split(/\s+/).filter(Boolean).length || 0);
+      }, 0) || 0;
+
+      setStats({
+        diaryEntries: entriesCount || 0,
+        writers: writersCount || 0,
+        wordsWritten: totalWords,
+      });
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <MainLayout>
@@ -111,10 +149,10 @@ export default function Index() {
             viewport={{ once: true }}
           >
             {[
-              { icon: PenTool, value: '0', label: 'Diary Entries' },
-              { icon: Users, value: '0', label: 'Writers' },
-              { icon: Star, value: '0', label: 'Words Written' },
-              { icon: BookOpen, value: '0', label: 'Stories Told' },
+              { icon: PenTool, value: stats.diaryEntries.toLocaleString(), label: 'Diary Entries' },
+              { icon: Users, value: stats.writers.toLocaleString(), label: 'Writers' },
+              { icon: Star, value: stats.wordsWritten.toLocaleString(), label: 'Words Written' },
+              { icon: BookOpen, value: stats.diaryEntries.toLocaleString(), label: 'Stories Told' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}

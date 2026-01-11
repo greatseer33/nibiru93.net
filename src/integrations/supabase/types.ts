@@ -60,6 +60,7 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          is_pinned: boolean
           is_private: boolean | null
           mood: string | null
           title: string
@@ -70,6 +71,7 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          is_pinned?: boolean
           is_private?: boolean | null
           mood?: string | null
           title: string
@@ -80,6 +82,7 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          is_pinned?: boolean
           is_private?: boolean | null
           mood?: string | null
           title?: string
