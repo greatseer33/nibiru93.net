@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, PenTool, User, LogOut, BookOpen } from 'lucide-react';
+import { Menu, X, PenTool, User, LogOut, BookOpen, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -72,6 +74,14 @@ export function Navbar() {
                     {t('nav.diary')}
                   </Button>
                 </Link>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm" className="gap-2 text-primary">
+                      <Shield className="w-4 h-4" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
                   <LogOut className="w-4 h-4" />
                   {t('nav.logout')}
@@ -142,6 +152,14 @@ export function Navbar() {
                         {t('nav.diary')}
                       </Button>
                     </Link>
+                    {isAdmin && (
+                      <Link to="/admin" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-primary">
+                          <Shield className="w-4 h-4" />
+                          Admin
+                        </Button>
+                      </Link>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"

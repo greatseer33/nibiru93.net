@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { ReportDialog } from '@/components/ReportDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +21,7 @@ interface Story {
   word_count: number;
   created_at: string;
   updated_at: string;
+  user_id: string;
 }
 
 export default function Stories() {
@@ -355,17 +357,22 @@ export default function Stories() {
                               <span>{format(new Date(story.updated_at), 'MMM d')}</span>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteStory(story.id);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                            {story.is_public && story.user_id !== user?.id && (
+                              <ReportDialog storyId={story.id} storyTitle={story.title} />
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteStory(story.id);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                       </motion.div>
                     ))
