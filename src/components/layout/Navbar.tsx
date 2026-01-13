@@ -74,6 +74,12 @@ export function Navbar() {
                     {t('nav.diary')}
                   </Button>
                 </Link>
+                <Link to="/profile">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <User className="w-4 h-4" />
+                    Profile
+                  </Button>
+                </Link>
                 {isAdmin && (
                   <Link to="/admin">
                     <Button variant="ghost" size="sm" className="gap-2 text-primary">
@@ -150,6 +156,12 @@ export function Navbar() {
                       <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
                         <PenTool className="w-4 h-4" />
                         {t('nav.diary')}
+                      </Button>
+                    </Link>
+                    <Link to="/profile" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+                        <User className="w-4 h-4" />
+                        Profile
                       </Button>
                     </Link>
                     {isAdmin && (
