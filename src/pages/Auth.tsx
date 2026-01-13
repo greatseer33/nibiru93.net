@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, Check, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle, Check, X, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Password validation schema
@@ -20,9 +21,13 @@ const passwordSchema = z.string()
 
 const emailSchema = z.string().email('Invalid email address');
 
+type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset';
+
 export default function Auth() {
   const [searchParams] = useSearchParams();
-  const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
+  const initialMode = searchParams.get('mode') === 'signup' ? 'signup' : 
+                      searchParams.get('mode') === 'reset' ? 'reset' : 'signin';
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
@@ -38,12 +43,16 @@ export default function Auth() {
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in (except for reset mode)
   useEffect(() => {
-    if (user) {
+    if (user && mode !== 'reset') {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, mode, navigate]);
+
+  const isSignUp = mode === 'signup';
+  const isForgot = mode === 'forgot';
+  const isReset = mode === 'reset';
 
   // Password strength indicators
   const passwordChecks = {
@@ -55,6 +64,29 @@ export default function Auth() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+
+    if (isForgot) {
+      try {
+        emailSchema.parse(email);
+      } catch (e) {
+        newErrors.email = 'Invalid email address';
+      }
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    }
+
+    if (isReset) {
+      try {
+        passwordSchema.parse(password);
+      } catch (e) {
+        newErrors.password = t('auth.password_requirements');
+      }
+      if (password !== confirmPassword) {
+        newErrors.confirmPassword = t('auth.passwords_not_match');
+      }
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    }
 
     // Validate email
     try {
@@ -83,8 +115,58 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleForgotPassword = async () => {
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset`,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password reset email sent! Check your inbox.');
+        setMode('signin');
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password updated successfully!');
+        navigate('/');
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isForgot) {
+      return handleForgotPassword();
+    }
+    
+    if (isReset) {
+      return handleResetPassword();
+    }
     
     if (!validateForm()) return;
 
@@ -123,6 +205,15 @@ export default function Auth() {
     }
   };
 
+  const getHeaderText = () => {
+    if (isForgot) return { title: 'Reset Password', subtitle: 'Enter your email to receive a reset link' };
+    if (isReset) return { title: 'Set New Password', subtitle: 'Choose a strong password for your account' };
+    if (isSignUp) return { title: t('auth.join_us'), subtitle: 'Create your account to start writing' };
+    return { title: t('auth.welcome_back'), subtitle: 'Sign in to continue your journey' };
+  };
+
+  const headerText = getHeaderText();
+
   return (
     <MainLayout>
       <div className="min-h-screen flex items-center justify-center py-20 px-4">
@@ -132,19 +223,31 @@ export default function Auth() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="glass-card rounded-2xl p-8">
+            {/* Back button for forgot/reset modes */}
+            {(isForgot || isReset) && (
+              <button
+                type="button"
+                onClick={() => setMode('signin')}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to sign in
+              </button>
+            )}
+
             {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-display text-primary gold-glow mb-2">
-                {isSignUp ? t('auth.join_us') : t('auth.welcome_back')}
+                {headerText.title}
               </h1>
               <p className="text-muted-foreground">
-                {isSignUp ? 'Create your account to start writing' : 'Sign in to continue your journey'}
+                {headerText.subtitle}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Username - Sign Up only */}
-              {isSignUp && (
+              {isSignUp && !isForgot && !isReset && (
                 <div className="space-y-2">
                   <Label htmlFor="username">{t('auth.username')}</Label>
                   <div className="relative">
@@ -168,7 +271,7 @@ export default function Auth() {
               )}
 
               {/* Display Name - Sign Up only */}
-              {isSignUp && (
+              {isSignUp && !isForgot && !isReset && (
                 <div className="space-y-2">
                   <Label htmlFor="displayName">{t('auth.display_name')}</Label>
                   <div className="relative">
@@ -185,87 +288,91 @@ export default function Auth() {
                 </div>
               )}
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">{t('auth.email')}</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-secondary/50 border-border"
-                    placeholder="writer@nibiru93.net"
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password">{t('auth.password')}</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 bg-secondary/50 border-border"
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.password}
-                  </p>
-                )}
-
-                {/* Password strength indicators - Sign Up only */}
-                {isSignUp && password && (
-                  <div className="mt-3 space-y-1">
-                    {[
-                      { key: 'length', label: 'At least 8 characters' },
-                      { key: 'uppercase', label: 'One uppercase letter' },
-                      { key: 'lowercase', label: 'One lowercase letter' },
-                      { key: 'number', label: 'One number' },
-                    ].map(({ key, label }) => (
-                      <div
-                        key={key}
-                        className={`flex items-center gap-2 text-xs ${
-                          passwordChecks[key as keyof typeof passwordChecks]
-                            ? 'text-green-400'
-                            : 'text-muted-foreground'
-                        }`}
-                      >
-                        {passwordChecks[key as keyof typeof passwordChecks] ? (
-                          <Check className="w-3 h-3" />
-                        ) : (
-                          <X className="w-3 h-3" />
-                        )}
-                        {label}
-                      </div>
-                    ))}
+              {/* Email - Not shown for reset mode */}
+              {!isReset && (
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t('auth.email')}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-10 bg-secondary/50 border-border"
+                      placeholder="writer@nibiru93.net"
+                    />
                   </div>
-                )}
-              </div>
+                  {errors.email && (
+                    <p className="text-destructive text-sm flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+              )}
 
-              {/* Confirm Password - Sign Up only */}
-              {isSignUp && (
+              {/* Password - Not shown for forgot mode */}
+              {!isForgot && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">{isReset ? 'New Password' : t('auth.password')}</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 pr-10 bg-secondary/50 border-border"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-destructive text-sm flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.password}
+                    </p>
+                  )}
+
+                  {/* Password strength indicators - Sign Up and Reset */}
+                  {(isSignUp || isReset) && password && (
+                    <div className="mt-3 space-y-1">
+                      {[
+                        { key: 'length', label: 'At least 8 characters' },
+                        { key: 'uppercase', label: 'One uppercase letter' },
+                        { key: 'lowercase', label: 'One lowercase letter' },
+                        { key: 'number', label: 'One number' },
+                      ].map(({ key, label }) => (
+                        <div
+                          key={key}
+                          className={`flex items-center gap-2 text-xs ${
+                            passwordChecks[key as keyof typeof passwordChecks]
+                              ? 'text-green-400'
+                              : 'text-muted-foreground'
+                          }`}
+                        >
+                          {passwordChecks[key as keyof typeof passwordChecks] ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          {label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Confirm Password - Sign Up and Reset */}
+              {(isSignUp || isReset) && (
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">{t('auth.confirm_password')}</Label>
                   <div className="relative">
@@ -288,6 +395,19 @@ export default function Auth() {
                 </div>
               )}
 
+              {/* Forgot Password Link - Sign In only */}
+              {!isSignUp && !isForgot && !isReset && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setMode('forgot')}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
+
               {/* Submit Button */}
               <Button
                 type="submit"
@@ -295,23 +415,28 @@ export default function Auth() {
                 size="lg"
                 disabled={loading}
               >
-                {loading ? t('common.loading') : isSignUp ? t('auth.signup') : t('auth.signin')}
+                {loading ? t('common.loading') : 
+                  isForgot ? 'Send Reset Link' :
+                  isReset ? 'Update Password' :
+                  isSignUp ? t('auth.signup') : t('auth.signin')}
               </Button>
             </form>
 
-            {/* Toggle Sign In / Sign Up */}
-            <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
-                {isSignUp ? t('auth.have_account') : t('auth.no_account')}{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-primary hover:underline"
-                >
-                  {isSignUp ? t('auth.signin') : t('auth.signup')}
-                </button>
-              </p>
-            </div>
+            {/* Toggle Sign In / Sign Up - Not shown for forgot/reset modes */}
+            {!isForgot && !isReset && (
+              <div className="mt-6 text-center">
+                <p className="text-muted-foreground">
+                  {isSignUp ? t('auth.have_account') : t('auth.no_account')}{' '}
+                  <button
+                    type="button"
+                    onClick={() => setMode(isSignUp ? 'signin' : 'signup')}
+                    className="text-primary hover:underline"
+                  >
+                    {isSignUp ? t('auth.signin') : t('auth.signup')}
+                  </button>
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
