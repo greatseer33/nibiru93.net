@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Diary from "./pages/Diary";
 import Stories from "./pages/Stories";
 import Profile from "./pages/Profile";
+import Community from "./pages/Community";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/diary" element={<Diary />} />
               <Route path="/stories" element={<Stories />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/community" element={<Community />} />
               <Route path="/admin" element={<Admin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
