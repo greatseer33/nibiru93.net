@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users } from 'lucide-react';
+import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users, Library } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,6 +26,7 @@ export function Navbar() {
     ...(user ? [
       { to: '/diary', label: t('nav.diary'), icon: PenTool },
       { to: '/stories', label: 'Stories', icon: BookOpen },
+      { to: '/novels', label: 'Novels', icon: Library },
     ] : []),
   ];
 
@@ -67,6 +68,12 @@ export function Navbar() {
                   <Button variant="ghost" size="sm" className="gap-2">
                     <BookOpen className="w-4 h-4" />
                     Stories
+                  </Button>
+                </Link>
+                <Link to="/novels">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Library className="w-4 h-4" />
+                    Novels
                   </Button>
                 </Link>
                 <Link to="/diary">
@@ -151,6 +158,12 @@ export function Navbar() {
                       <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
                         <BookOpen className="w-4 h-4" />
                         Stories
+                      </Button>
+                    </Link>
+                    <Link to="/novels" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+                        <Library className="w-4 h-4" />
+                        Novels
                       </Button>
                     </Link>
                     <Link to="/diary" onClick={() => setIsOpen(false)}>

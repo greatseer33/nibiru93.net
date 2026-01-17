@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Diary from "./pages/Diary";
 import Stories from "./pages/Stories";
+import Novels from "./pages/Novels";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
 import Admin from "./pages/Admin";
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/diary" element={<Diary />} />
               <Route path="/stories" element={<Stories />} />
+              <Route path="/novels" element={<Novels />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/community" element={<Community />} />
               <Route path="/admin" element={<Admin />} />
