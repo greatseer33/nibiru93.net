@@ -13,33 +13,28 @@ export default function Index() {
     diaryEntries: 0,
     writers: 0,
     wordsWritten: 0,
+    storiesCount: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
-      // Fetch total diary entries count
-      const { count: entriesCount } = await supabase
-        .from('diary_entries')
-        .select('*', { count: 'exact', head: true });
+      // Fetch all stats in parallel
+      const [entriesRes, writersRes, entriesDataRes, storiesRes] = await Promise.all([
+        supabase.from('diary_entries').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('diary_entries').select('content'),
+        supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
+      ]);
 
-      // Fetch unique writers count
-      const { count: writersCount } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch all entries to count words
-      const { data: entries } = await supabase
-        .from('diary_entries')
-        .select('content');
-
-      const totalWords = entries?.reduce((acc, entry) => {
+      const totalWords = entriesDataRes.data?.reduce((acc, entry) => {
         return acc + (entry.content?.split(/\s+/).filter(Boolean).length || 0);
       }, 0) || 0;
 
       setStats({
-        diaryEntries: entriesCount || 0,
-        writers: writersCount || 0,
+        diaryEntries: entriesRes.count || 0,
+        writers: writersRes.count || 0,
         wordsWritten: totalWords,
+        storiesCount: storiesRes.count || 0,
       });
     };
 
@@ -152,7 +147,7 @@ export default function Index() {
               { icon: PenTool, value: stats.diaryEntries.toLocaleString(), label: 'Diary Entries' },
               { icon: Users, value: stats.writers.toLocaleString(), label: 'Writers' },
               { icon: Star, value: stats.wordsWritten.toLocaleString(), label: 'Words Written' },
-              { icon: BookOpen, value: stats.diaryEntries.toLocaleString(), label: 'Stories Told' },
+              { icon: BookOpen, value: stats.storiesCount.toLocaleString(), label: 'Stories Told' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
