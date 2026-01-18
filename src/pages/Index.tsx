@@ -13,17 +13,18 @@ export default function Index() {
     diaryEntries: 0,
     writers: 0,
     wordsWritten: 0,
-    storiesCount: 0,
+    totalStories: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       // Fetch all stats in parallel
-      const [entriesRes, writersRes, entriesDataRes, storiesRes] = await Promise.all([
+      const [entriesRes, writersRes, entriesDataRes, storiesRes, novelsRes] = await Promise.all([
         supabase.from('diary_entries').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('diary_entries').select('content'),
         supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
+        supabase.from('novels').select('*', { count: 'exact', head: true }),
       ]);
 
       const totalWords = entriesDataRes.data?.reduce((acc, entry) => {
@@ -34,7 +35,7 @@ export default function Index() {
         diaryEntries: entriesRes.count || 0,
         writers: writersRes.count || 0,
         wordsWritten: totalWords,
-        storiesCount: storiesRes.count || 0,
+        totalStories: (storiesRes.count || 0) + (novelsRes.count || 0),
       });
     };
 
@@ -147,7 +148,7 @@ export default function Index() {
               { icon: PenTool, value: stats.diaryEntries.toLocaleString(), label: 'Diary Entries' },
               { icon: Users, value: stats.writers.toLocaleString(), label: 'Writers' },
               { icon: Star, value: stats.wordsWritten.toLocaleString(), label: 'Words Written' },
-              { icon: BookOpen, value: stats.storiesCount.toLocaleString(), label: 'Stories Told' },
+              { icon: BookOpen, value: stats.totalStories.toLocaleString(), label: 'Stories Told' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
