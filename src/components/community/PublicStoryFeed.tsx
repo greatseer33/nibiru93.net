@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { BookOpen, User, Clock, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReportDialog } from '@/components/ReportDialog';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Story {
@@ -25,6 +27,7 @@ interface StoryWithProfile extends Story {
 export function PublicStoryFeed() {
   const [stories, setStories] = useState<StoryWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchPublicStories();
@@ -99,7 +102,7 @@ export function PublicStoryFeed() {
           className="glass-card p-6 rounded-xl hover:border-primary/30 transition-colors"
         >
           <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
+            <div className="flex-1">
               <h3 className="text-xl font-semibold text-foreground mb-1">
                 {story.title}
               </h3>
@@ -118,6 +121,9 @@ export function PublicStoryFeed() {
                 </div>
               </div>
             </div>
+            {user && story.user_id !== user.id && (
+              <ReportDialog storyId={story.id} storyTitle={story.title} />
+            )}
           </div>
           
           <p className="text-foreground/80 line-clamp-4 whitespace-pre-wrap">
