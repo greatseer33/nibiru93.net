@@ -115,6 +115,61 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          novel_id: string | null
+          story_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          novel_id?: string | null
+          story_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          novel_id?: string | null
+          story_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_novel_id_fkey"
+            columns: ["novel_id"]
+            isOneToOne: false
+            referencedRelation: "novels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diary_entries: {
         Row: {
           content: string
@@ -292,6 +347,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          views: number | null
           word_count: number
         }
         Insert: {
@@ -302,6 +358,7 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          views?: number | null
           word_count?: number
         }
         Update: {
@@ -312,6 +369,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          views?: number | null
           word_count?: number
         }
         Relationships: []
@@ -336,6 +394,93 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      view_milestones: {
+        Row: {
+          claimed_at: string
+          credits_awarded: number
+          id: string
+          milestone: number
+          novel_id: string | null
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          credits_awarded: number
+          id?: string
+          milestone: number
+          novel_id?: string | null
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          credits_awarded?: number
+          id?: string
+          milestone?: number
+          novel_id?: string | null
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "view_milestones_novel_id_fkey"
+            columns: ["novel_id"]
+            isOneToOne: false
+            referencedRelation: "novels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_milestones_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_milestones_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      writer_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "writer_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
