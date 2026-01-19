@@ -135,6 +135,54 @@ export default function Novels() {
     }
   };
 
+  const handleExistingNovelCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeNovel || !user) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Cover image must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${activeNovel.id}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from('novel-covers')
+      .upload(fileName, file, { upsert: true });
+
+    if (error) {
+      toast.error('Failed to upload cover');
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('novel-covers')
+      .getPublicUrl(fileName);
+
+    const coverUrl = urlData.publicUrl + '?t=' + Date.now(); // Cache bust
+
+    const { error: updateError } = await supabase
+      .from('novels')
+      .update({ cover_url: coverUrl })
+      .eq('id', activeNovel.id);
+
+    if (updateError) {
+      toast.error('Failed to update cover');
+    } else {
+      setActiveNovel({ ...activeNovel, cover_url: coverUrl });
+      setNovels(prev => prev.map(n => 
+        n.id === activeNovel.id ? { ...n, cover_url: coverUrl } : n
+      ));
+      toast.success('Cover updated!');
+    }
+    
+    setUploading(false);
+  };
+
   const uploadCover = async (novelId: string): Promise<string | null> => {
     if (!coverFile || !user) return null;
 
@@ -417,19 +465,40 @@ export default function Novels() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Cover Image */}
+                {/* Cover Image with Upload */}
                 <div className="w-full md:w-48 flex-shrink-0">
-                  {activeNovel.cover_url ? (
-                    <img
-                      src={activeNovel.cover_url}
-                      alt={activeNovel.title}
-                      className="w-full h-64 md:h-72 object-cover rounded-lg"
+                  <label className="cursor-pointer block relative group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleExistingNovelCoverChange}
+                      className="hidden"
                     />
-                  ) : (
-                    <div className="w-full h-64 md:h-72 bg-secondary/50 rounded-lg flex items-center justify-center">
-                      <BookOpen className="w-12 h-12 text-muted-foreground" />
+                    {activeNovel.cover_url ? (
+                      <img
+                        src={activeNovel.cover_url}
+                        alt={activeNovel.title}
+                        className="w-full h-64 md:h-72 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-full h-64 md:h-72 bg-secondary/50 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
+                    {/* Upload overlay */}
+                    <div className="absolute inset-0 bg-background/80 rounded-lg flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {uploading ? (
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                      ) : (
+                        <>
+                          <Image className="w-8 h-8 text-primary" />
+                          <span className="text-sm text-foreground font-medium">
+                            {activeNovel.cover_url ? 'Change Cover' : 'Upload Cover'}
+                          </span>
+                        </>
+                      )}
                     </div>
-                  )}
+                  </label>
                 </div>
 
                 {/* Novel Info */}
