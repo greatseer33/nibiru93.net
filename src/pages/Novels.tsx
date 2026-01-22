@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, Trash2, Edit2, Image, Eye, Loader2, ChevronRight } from 'lucide-react';
+import { Plus, BookOpen, Trash2, Edit2, Image, Eye, Loader2, ChevronRight, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -465,40 +465,48 @@ export default function Novels() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Cover Image with Upload */}
-                <div className="w-full md:w-48 flex-shrink-0">
-                  <label className="cursor-pointer block relative group">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleExistingNovelCoverChange}
-                      className="hidden"
-                    />
-                    {activeNovel.cover_url ? (
-                      <img
-                        src={activeNovel.cover_url}
-                        alt={activeNovel.title}
-                        className="w-full h-64 md:h-72 object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="w-full h-64 md:h-72 bg-secondary/50 rounded-lg flex items-center justify-center">
-                        <BookOpen className="w-12 h-12 text-muted-foreground" />
-                      </div>
-                    )}
-                    {/* Upload overlay */}
-                    <div className="absolute inset-0 bg-background/80 rounded-lg flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {uploading ? (
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                      ) : (
-                        <>
-                          <Image className="w-8 h-8 text-primary" />
-                          <span className="text-sm text-foreground font-medium">
-                            {activeNovel.cover_url ? 'Change Cover' : 'Upload Cover'}
+                {/* Cover Image with Upload - New Design */}
+                <div className="w-full md:w-64 flex-shrink-0 bg-secondary/30 rounded-lg p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-foreground mb-1">Book Cover</h3>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Image size limit: 800px × 600px, within 5 MB; format: JPG, JPEG, PNG
+                      </p>
+                      <label className="cursor-pointer inline-block">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png"
+                          onChange={handleExistingNovelCoverChange}
+                          className="hidden"
+                          disabled={uploading}
+                        />
+                        <Button type="button" variant="outline" size="sm" className="gap-2" disabled={uploading} asChild>
+                          <span>
+                            {uploading ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Upload className="w-4 h-4" />
+                            )}
+                            {uploading ? 'Uploading...' : 'Upload'}
                           </span>
-                        </>
+                        </Button>
+                      </label>
+                    </div>
+                    <div className="flex-shrink-0">
+                      {activeNovel.cover_url ? (
+                        <img
+                          src={activeNovel.cover_url}
+                          alt={activeNovel.title}
+                          className="w-20 h-28 object-cover rounded-lg border border-border"
+                        />
+                      ) : (
+                        <div className="w-20 h-28 bg-secondary/50 rounded-lg border border-dashed border-border flex items-center justify-center">
+                          <BookOpen className="w-6 h-6 text-muted-foreground" />
+                        </div>
                       )}
                     </div>
-                  </label>
+                  </div>
                 </div>
 
                 {/* Novel Info */}
@@ -670,28 +678,43 @@ export default function Novels() {
                   <DialogTitle className="font-display text-xl">Create New Novel</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
-                  {/* Cover Upload */}
-                  <div className="flex justify-center">
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleCoverChange}
-                        className="hidden"
-                      />
-                      {coverPreview ? (
-                        <img
-                          src={coverPreview}
-                          alt="Cover preview"
-                          className="w-32 h-44 object-cover rounded-lg border-2 border-dashed border-primary/50 hover:border-primary transition-colors"
-                        />
-                      ) : (
-                        <div className="w-32 h-44 bg-secondary/50 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2">
-                          <Image className="w-8 h-8 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">Add Cover</span>
-                        </div>
-                      )}
-                    </label>
+                  {/* Cover Upload - New Design */}
+                  <div className="bg-secondary/30 rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground mb-1">Book Cover</h3>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Image size limit: 800px × 600px, within 5 MB; format: JPG, JPEG, PNG
+                        </p>
+                        <label className="cursor-pointer inline-block">
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png"
+                            onChange={handleCoverChange}
+                            className="hidden"
+                          />
+                          <Button type="button" variant="outline" size="sm" className="gap-2" asChild>
+                            <span>
+                              <Upload className="w-4 h-4" />
+                              Upload
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                      <div className="flex-shrink-0">
+                        {coverPreview ? (
+                          <img
+                            src={coverPreview}
+                            alt="Cover preview"
+                            className="w-24 h-32 object-cover rounded-lg border border-border"
+                          />
+                        ) : (
+                          <div className="w-24 h-32 bg-secondary/50 rounded-lg border border-dashed border-border flex items-center justify-center">
+                            <BookOpen className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <Input
