@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users, Library } from 'lucide-react';
+import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users, Library, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,6 +27,7 @@ export function Navbar() {
       { to: '/diary', label: t('nav.diary'), icon: PenTool },
       { to: '/stories', label: 'Stories', icon: BookOpen },
       { to: '/novels', label: 'Novels', icon: Library },
+      { to: '/friends', label: 'Friends', icon: UserPlus },
     ] : []),
   ];
 

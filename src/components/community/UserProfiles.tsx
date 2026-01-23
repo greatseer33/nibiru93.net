@@ -4,6 +4,8 @@ import { User, BookOpen, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FriendRequestButton } from '@/components/friends/FriendRequestButton';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
   id: string;
@@ -18,6 +20,7 @@ interface UserProfile {
 export function UserProfiles() {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfiles();
@@ -109,19 +112,25 @@ export function UserProfiles() {
           transition={{ delay: index * 0.05 }}
           className="glass-card p-6 rounded-xl hover:border-primary/30 transition-colors"
         >
-          <div className="flex items-center gap-4 mb-4">
-            <Avatar className="w-16 h-16 border-2 border-primary/20">
-              <AvatarImage src={profile.avatar_url || undefined} />
-              <AvatarFallback className="bg-secondary text-lg">
-                {(profile.display_name || profile.username)?.[0]?.toUpperCase() || <User className="w-6 h-6" />}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-semibold text-foreground">
-                {profile.display_name || profile.username}
-              </h3>
-              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+          <div className="flex items-center justify-between mb-4">
+            <div 
+              className="flex items-center gap-4 cursor-pointer flex-1"
+              onClick={() => navigate(`/profile/${profile.id}`)}
+            >
+              <Avatar className="w-16 h-16 border-2 border-primary/20">
+                <AvatarImage src={profile.avatar_url || undefined} />
+                <AvatarFallback className="bg-secondary text-lg">
+                  {(profile.display_name || profile.username)?.[0]?.toUpperCase() || <User className="w-6 h-6" />}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-foreground">
+                  {profile.display_name || profile.username}
+                </h3>
+                <p className="text-sm text-muted-foreground">@{profile.username}</p>
+              </div>
             </div>
+            <FriendRequestButton userId={profile.id} variant="compact" />
           </div>
 
           {profile.bio && (
