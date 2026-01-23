@@ -481,14 +481,14 @@ export default function Novels() {
                           className="hidden"
                           disabled={uploading}
                         />
-                        <Button type="button" variant="outline" size="sm" className="gap-2" disabled={uploading} asChild>
+                        <Button type="button" variant="default" size="default" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" disabled={uploading} asChild>
                           <span>
                             {uploading ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <Upload className="w-4 h-4" />
                             )}
-                            {uploading ? 'Uploading...' : 'Upload'}
+                            {uploading ? 'Uploading...' : 'Upload Your Book Cover'}
                           </span>
                         </Button>
                       </label>
@@ -693,10 +693,10 @@ export default function Novels() {
                             onChange={handleCoverChange}
                             className="hidden"
                           />
-                          <Button type="button" variant="outline" size="sm" className="gap-2" asChild>
+                          <Button type="button" variant="default" size="default" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
                             <span>
                               <Upload className="w-4 h-4" />
-                              Upload
+                              Upload Your Book Cover
                             </span>
                           </Button>
                         </label>
