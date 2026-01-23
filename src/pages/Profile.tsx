@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, User, Save, Loader2, Trash2 } from 'lucide-react';
+import { Camera, User, Save, Loader2, Trash2, BookOpen, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { WriterCredits } from '@/components/WriterCredits';
+import { FriendRequestButton } from '@/components/friends/FriendRequestButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,8 +33,15 @@ interface Profile {
   bio: string | null;
 }
 
+interface ProfileStats {
+  story_count: number;
+  novel_count: number;
+}
+
 export default function Profile() {
+  const { userId } = useParams<{ userId?: string }>();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [stats, setStats] = useState<ProfileStats>({ story_count: 0, novel_count: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -47,26 +55,29 @@ export default function Profile() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Determine if viewing own profile or someone else's
+  const isOwnProfile = !userId || (user && userId === user.id);
+  const targetUserId = userId || user?.id;
+
   useEffect(() => {
-    if (!authLoading && !user) {
+    // Only redirect to auth if viewing own profile and not logged in
+    if (!authLoading && !user && !userId) {
       navigate('/auth');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, userId]);
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
+    if (targetUserId) {
+      fetchProfile(targetUserId);
     }
-  }, [user]);
+  }, [targetUserId]);
 
-  const fetchProfile = async () => {
-    if (!user) return;
-    
+  const fetchProfile = async (profileId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', profileId)
         .single();
 
       if (error) throw error;
@@ -75,6 +86,24 @@ export default function Profile() {
       setDisplayName(data.display_name || '');
       setBio(data.bio || '');
       setAvatarUrl(data.avatar_url);
+
+      // Fetch stats
+      const [storiesRes, novelsRes] = await Promise.all([
+        supabase
+          .from('stories')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', profileId)
+          .eq('is_public', true),
+        supabase
+          .from('novels')
+          .select('id', { count: 'exact', head: true })
+          .eq('author_id', profileId),
+      ]);
+
+      setStats({
+        story_count: storiesRes.count || 0,
+        novel_count: novelsRes.count || 0,
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error('Failed to load profile');
@@ -215,6 +244,67 @@ export default function Profile() {
     );
   }
 
+  // Public profile view for other users
+  if (!isOwnProfile && profile) {
+    return (
+      <MainLayout>
+        <div className="min-h-screen py-20 px-4">
+          <div className="container mx-auto max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card rounded-2xl p-8"
+            >
+              {/* Avatar and Name */}
+              <div className="flex flex-col items-center mb-8">
+                <Avatar className="w-32 h-32 border-4 border-primary/20 mb-4">
+                  <AvatarImage src={avatarUrl || undefined} alt="Profile avatar" />
+                  <AvatarFallback className="bg-secondary text-4xl">
+                    {(profile.display_name || profile.username)?.[0]?.toUpperCase() || <User className="w-12 h-12" />}
+                  </AvatarFallback>
+                </Avatar>
+
+                <h1 className="text-3xl font-display text-foreground mb-1">
+                  {profile.display_name || profile.username}
+                </h1>
+                <p className="text-muted-foreground mb-4">@{profile.username}</p>
+
+                {/* Friend Request Button */}
+                <FriendRequestButton userId={profile.id} />
+              </div>
+
+              {/* Bio */}
+              {profile.bio && (
+                <div className="mb-8 text-center">
+                  <p className="text-foreground/80">{profile.bio}</p>
+                </div>
+              )}
+
+              {/* Stats */}
+              <div className="flex items-center justify-center gap-8 text-center">
+                <div>
+                  <div className="flex items-center gap-2 justify-center text-2xl font-display text-foreground">
+                    <FileText className="w-5 h-5 text-primary" />
+                    {stats.story_count}
+                  </div>
+                  <p className="text-sm text-muted-foreground">Stories</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 justify-center text-2xl font-display text-foreground">
+                    <BookOpen className="w-5 h-5 text-primary" />
+                    {stats.novel_count}
+                  </div>
+                  <p className="text-sm text-muted-foreground">Novels</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Own profile edit view
   return (
     <MainLayout>
       <div className="min-h-screen py-20 px-4">
