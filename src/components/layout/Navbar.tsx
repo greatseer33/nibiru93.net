@@ -41,7 +41,7 @@ export function Navbar() {
               className="text-xl md:text-2xl font-display text-primary gold-glow"
               whileHover={{ scale: 1.05 }}
             >
-              Nibiru93
+              Nibiru media
             </motion.div>
           </Link>
 
