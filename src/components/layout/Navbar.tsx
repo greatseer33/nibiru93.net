@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users, Library, UserPlus } from 'lucide-react';
+import { Menu, X, PenTool, User, LogOut, BookOpen, Shield, Users, Library, UserPlus, Feather } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,7 @@ export function Navbar() {
   const navLinks = [
     { to: '/', label: t('nav.home'), icon: null },
     { to: '/community', label: 'Community', icon: Users },
+    { to: '/poetry', label: t('nav.poetry'), icon: Feather },
     ...(user ? [
       { to: '/diary', label: t('nav.diary'), icon: PenTool },
       { to: '/stories', label: 'Stories', icon: BookOpen },
