@@ -316,6 +316,86 @@ export type Database = {
           },
         ]
       }
+      poem_likes: {
+        Row: {
+          created_at: string
+          id: string
+          poem_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          poem_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          poem_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poem_likes_poem_id_fkey"
+            columns: ["poem_id"]
+            isOneToOne: false
+            referencedRelation: "poems"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "poem_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      poems: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          is_public: boolean
+          title: string
+          updated_at: string
+          user_id: string
+          views: number | null
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+          views?: number | null
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poems_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Diary from "./pages/Diary";
 import Stories from "./pages/Stories";
 import Novels from "./pages/Novels";
+import Poetry from "./pages/Poetry";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
 import Friends from "./pages/Friends";
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/diary" element={<Diary />} />
               <Route path="/stories" element={<Stories />} />
               <Route path="/novels" element={<Novels />} />
+              <Route path="/poetry" element={<Poetry />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:userId" element={<Profile />} />
               <Route path="/community" element={<Community />} />
