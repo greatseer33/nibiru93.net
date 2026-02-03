@@ -196,9 +196,9 @@ export default function Index() {
       <footer className="py-10 border-t border-border/50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-2xl font-display text-primary gold-glow">Nibiru93.net</div>
+            <div className="text-2xl font-display text-primary gold-glow">Nibiru media.net</div>
             <p className="text-muted-foreground text-sm">
-              © 2026 Nibiru93.net. All rights reserved.
+              © 2026 Nibiru media.net. All rights reserved.
             </p>
           </div>
         </div>
