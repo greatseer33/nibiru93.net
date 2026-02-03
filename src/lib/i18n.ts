@@ -1,11 +1,9 @@
-export type Language = 'en' | 'ar' | 'it' | 'fr' | 'es';
+export type Language = 'en' | 'fr' | 'ar';
 
 export const languages: { code: Language; name: string; nativeName: string; dir: 'ltr' | 'rtl' }[] = [
   { code: 'en', name: 'English', nativeName: 'English', dir: 'ltr' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', dir: 'rtl' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', dir: 'ltr' },
   { code: 'fr', name: 'French', nativeName: 'Français', dir: 'ltr' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', dir: 'ltr' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', dir: 'rtl' },
 ];
 
 export const translations: Record<Language, Record<string, string>> = {
@@ -20,7 +18,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.profile': 'Profile',
     
     // Hero
-    'hero.title': 'Nibiru93.net',
+    'hero.title': 'Nibiru media.net',
     'hero.subtitle': 'Where Stories Transcend Worlds',
     'hero.description': 'Discover epic tales, write your own legends, and keep your private diary in the stars.',
     'hero.explore': 'Explore Novels',
@@ -69,126 +67,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.edit': 'Edit',
     'common.search': 'Search',
   },
-  ar: {
-    // Navigation
-    'nav.home': 'الرئيسية',
-    'nav.novels': 'الروايات',
-    'nav.diary': 'مذكراتي',
-    'nav.signin': 'تسجيل الدخول',
-    'nav.signup': 'إنشاء حساب',
-    'nav.logout': 'تسجيل الخروج',
-    'nav.profile': 'الملف الشخصي',
-    
-    // Hero
-    'hero.title': 'Nibiru93.net',
-    'hero.subtitle': 'حيث تتجاوز القصص العوالم',
-    'hero.description': 'اكتشف الملاحم العظيمة، اكتب أساطيرك الخاصة، واحفظ مذكراتك في النجوم.',
-    'hero.explore': 'استكشف الروايات',
-    'hero.start_writing': 'ابدأ الكتابة',
-    
-    // Auth
-    'auth.signin': 'تسجيل الدخول',
-    'auth.signup': 'إنشاء حساب',
-    'auth.email': 'البريد الإلكتروني',
-    'auth.password': 'كلمة المرور',
-    'auth.confirm_password': 'تأكيد كلمة المرور',
-    'auth.username': 'اسم المستخدم',
-    'auth.display_name': 'اسم العرض',
-    'auth.forgot_password': 'نسيت كلمة المرور؟',
-    'auth.no_account': 'ليس لديك حساب؟',
-    'auth.have_account': 'لديك حساب بالفعل؟',
-    'auth.password_requirements': 'يجب أن تكون كلمة المرور 8 أحرف على الأقل مع حرف كبير وحرف صغير ورقم',
-    'auth.passwords_not_match': 'كلمات المرور غير متطابقة',
-    'auth.welcome_back': 'مرحباً بعودتك',
-    'auth.join_us': 'انضم إلى الكون',
-    
-    // Novels
-    'novels.featured': 'روايات مميزة',
-    'novels.trending': 'الأكثر رواجاً',
-    'novels.latest': 'آخر التحديثات',
-    'novels.read_more': 'اقرأ المزيد',
-    'novels.chapters': 'الفصول',
-    'novels.views': 'المشاهدات',
-    
-    // Diary
-    'diary.title': 'مذكراتي الكونية',
-    'diary.new_entry': 'إدخال جديد',
-    'diary.mood': 'المزاج',
-    'diary.private': 'خاص',
-    'diary.save': 'حفظ',
-    'diary.delete': 'حذف',
-    'diary.edit': 'تعديل',
-    'diary.empty': 'مذكراتك فارغة. ابدأ بكتابة أول إدخال!',
-    
-    // Common
-    'common.loading': 'جاري التحميل...',
-    'common.error': 'حدث خطأ',
-    'common.save': 'حفظ',
-    'common.cancel': 'إلغاء',
-    'common.delete': 'حذف',
-    'common.edit': 'تعديل',
-    'common.search': 'بحث',
-  },
-  it: {
-    // Navigation
-    'nav.home': 'Home',
-    'nav.novels': 'Romanzi',
-    'nav.diary': 'Il Mio Diario',
-    'nav.signin': 'Accedi',
-    'nav.signup': 'Registrati',
-    'nav.logout': 'Esci',
-    'nav.profile': 'Profilo',
-    
-    // Hero
-    'hero.title': 'Nibiru93.net',
-    'hero.subtitle': 'Dove le Storie Trascendono i Mondi',
-    'hero.description': 'Scopri racconti epici, scrivi le tue leggende e tieni il tuo diario privato nelle stelle.',
-    'hero.explore': 'Esplora Romanzi',
-    'hero.start_writing': 'Inizia a Scrivere',
-    
-    // Auth
-    'auth.signin': 'Accedi',
-    'auth.signup': 'Crea Account',
-    'auth.email': 'Email',
-    'auth.password': 'Password',
-    'auth.confirm_password': 'Conferma Password',
-    'auth.username': 'Nome Utente',
-    'auth.display_name': 'Nome Visualizzato',
-    'auth.forgot_password': 'Password Dimenticata?',
-    'auth.no_account': 'Non hai un account?',
-    'auth.have_account': 'Hai già un account?',
-    'auth.password_requirements': 'La password deve avere almeno 8 caratteri con maiuscola, minuscola e numero',
-    'auth.passwords_not_match': 'Le password non corrispondono',
-    'auth.welcome_back': 'Bentornato',
-    'auth.join_us': 'Unisciti al Cosmo',
-    
-    // Novels
-    'novels.featured': 'Romanzi in Evidenza',
-    'novels.trending': 'Di Tendenza',
-    'novels.latest': 'Ultimi Aggiornamenti',
-    'novels.read_more': 'Leggi di Più',
-    'novels.chapters': 'Capitoli',
-    'novels.views': 'Visualizzazioni',
-    
-    // Diary
-    'diary.title': 'Il Mio Diario Cosmico',
-    'diary.new_entry': 'Nuova Voce',
-    'diary.mood': 'Umore',
-    'diary.private': 'Privato',
-    'diary.save': 'Salva',
-    'diary.delete': 'Elimina',
-    'diary.edit': 'Modifica',
-    'diary.empty': 'Il tuo diario è vuoto. Inizia a scrivere la tua prima voce!',
-    
-    // Common
-    'common.loading': 'Caricamento...',
-    'common.error': 'Si è verificato un errore',
-    'common.save': 'Salva',
-    'common.cancel': 'Annulla',
-    'common.delete': 'Elimina',
-    'common.edit': 'Modifica',
-    'common.search': 'Cerca',
-  },
   fr: {
     // Navigation
     'nav.home': 'Accueil',
@@ -200,7 +78,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.profile': 'Profil',
     
     // Hero
-    'hero.title': 'Nibiru93.net',
+    'hero.title': 'Nibiru media.net',
     'hero.subtitle': 'Où les Histoires Transcendent les Mondes',
     'hero.description': 'Découvrez des récits épiques, écrivez vos propres légendes et gardez votre journal intime dans les étoiles.',
     'hero.explore': 'Explorer les Romans',
@@ -249,65 +127,65 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.edit': 'Modifier',
     'common.search': 'Rechercher',
   },
-  es: {
+  ar: {
     // Navigation
-    'nav.home': 'Inicio',
-    'nav.novels': 'Novelas',
-    'nav.diary': 'Mi Diario',
-    'nav.signin': 'Iniciar Sesión',
-    'nav.signup': 'Registrarse',
-    'nav.logout': 'Cerrar Sesión',
-    'nav.profile': 'Perfil',
+    'nav.home': 'الرئيسية',
+    'nav.novels': 'الروايات',
+    'nav.diary': 'مذكراتي',
+    'nav.signin': 'تسجيل الدخول',
+    'nav.signup': 'إنشاء حساب',
+    'nav.logout': 'تسجيل الخروج',
+    'nav.profile': 'الملف الشخصي',
     
     // Hero
-    'hero.title': 'Nibiru93.net',
-    'hero.subtitle': 'Donde las Historias Trascienden Mundos',
-    'hero.description': 'Descubre relatos épicos, escribe tus propias leyendas y guarda tu diario privado en las estrellas.',
-    'hero.explore': 'Explorar Novelas',
-    'hero.start_writing': 'Empezar a Escribir',
+    'hero.title': 'Nibiru media.net',
+    'hero.subtitle': 'حيث تتجاوز القصص العوالم',
+    'hero.description': 'اكتشف الملاحم العظيمة، اكتب أساطيرك الخاصة، واحفظ مذكراتك في النجوم.',
+    'hero.explore': 'استكشف الروايات',
+    'hero.start_writing': 'ابدأ الكتابة',
     
     // Auth
-    'auth.signin': 'Iniciar Sesión',
-    'auth.signup': 'Crear Cuenta',
-    'auth.email': 'Correo Electrónico',
-    'auth.password': 'Contraseña',
-    'auth.confirm_password': 'Confirmar Contraseña',
-    'auth.username': 'Nombre de Usuario',
-    'auth.display_name': 'Nombre para Mostrar',
-    'auth.forgot_password': '¿Olvidaste tu contraseña?',
-    'auth.no_account': '¿No tienes cuenta?',
-    'auth.have_account': '¿Ya tienes cuenta?',
-    'auth.password_requirements': 'La contraseña debe tener al menos 8 caracteres con mayúscula, minúscula y número',
-    'auth.passwords_not_match': 'Las contraseñas no coinciden',
-    'auth.welcome_back': 'Bienvenido de Nuevo',
-    'auth.join_us': 'Únete al Cosmos',
+    'auth.signin': 'تسجيل الدخول',
+    'auth.signup': 'إنشاء حساب',
+    'auth.email': 'البريد الإلكتروني',
+    'auth.password': 'كلمة المرور',
+    'auth.confirm_password': 'تأكيد كلمة المرور',
+    'auth.username': 'اسم المستخدم',
+    'auth.display_name': 'اسم العرض',
+    'auth.forgot_password': 'نسيت كلمة المرور؟',
+    'auth.no_account': 'ليس لديك حساب؟',
+    'auth.have_account': 'لديك حساب بالفعل؟',
+    'auth.password_requirements': 'يجب أن تكون كلمة المرور 8 أحرف على الأقل مع حرف كبير وحرف صغير ورقم',
+    'auth.passwords_not_match': 'كلمات المرور غير متطابقة',
+    'auth.welcome_back': 'مرحباً بعودتك',
+    'auth.join_us': 'انضم إلى الكون',
     
     // Novels
-    'novels.featured': 'Novelas Destacadas',
-    'novels.trending': 'Tendencias',
-    'novels.latest': 'Últimas Actualizaciones',
-    'novels.read_more': 'Leer Más',
-    'novels.chapters': 'Capítulos',
-    'novels.views': 'Vistas',
+    'novels.featured': 'روايات مميزة',
+    'novels.trending': 'الأكثر رواجاً',
+    'novels.latest': 'آخر التحديثات',
+    'novels.read_more': 'اقرأ المزيد',
+    'novels.chapters': 'الفصول',
+    'novels.views': 'المشاهدات',
     
     // Diary
-    'diary.title': 'Mi Diario Cósmico',
-    'diary.new_entry': 'Nueva Entrada',
-    'diary.mood': 'Estado de Ánimo',
-    'diary.private': 'Privado',
-    'diary.save': 'Guardar',
-    'diary.delete': 'Eliminar',
-    'diary.edit': 'Editar',
-    'diary.empty': 'Tu diario está vacío. ¡Empieza a escribir tu primera entrada!',
+    'diary.title': 'مذكراتي الكونية',
+    'diary.new_entry': 'إدخال جديد',
+    'diary.mood': 'المزاج',
+    'diary.private': 'خاص',
+    'diary.save': 'حفظ',
+    'diary.delete': 'حذف',
+    'diary.edit': 'تعديل',
+    'diary.empty': 'مذكراتك فارغة. ابدأ بكتابة أول إدخال!',
     
     // Common
-    'common.loading': 'Cargando...',
-    'common.error': 'Ocurrió un error',
-    'common.save': 'Guardar',
-    'common.cancel': 'Cancelar',
-    'common.delete': 'Eliminar',
-    'common.edit': 'Editar',
-    'common.search': 'Buscar',
+    'common.loading': 'جاري التحميل...',
+    'common.error': 'حدث خطأ',
+    'common.save': 'حفظ',
+    'common.cancel': 'إلغاء',
+    'common.delete': 'حذف',
+    'common.edit': 'تعديل',
+    'common.search': 'بحث',
   },
 };
 
