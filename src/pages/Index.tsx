@@ -19,22 +19,26 @@ export default function Index() {
   useEffect(() => {
     const fetchStats = async () => {
       // Fetch all stats in parallel
-      const [entriesRes, writersRes, entriesDataRes, storiesRes, novelsRes] = await Promise.all([
+      const [entriesRes, writersRes, storiesDataRes, poemsDataRes, chaptersDataRes, storiesRes, novelsRes] = await Promise.all([
         supabase.from('diary_entries').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('diary_entries').select('content'),
+        supabase.from('stories').select('content').eq('is_public', true),
+        supabase.from('poems').select('content').eq('is_public', true),
+        supabase.from('chapters').select('content').eq('published', true),
         supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
         supabase.from('novels').select('*', { count: 'exact', head: true }),
       ]);
 
-      const totalWords = entriesDataRes.data?.reduce((acc, entry) => {
-        return acc + (entry.content?.split(/\s+/).filter(Boolean).length || 0);
-      }, 0) || 0;
+      const countWords = (text: string | null) => text?.split(/\s+/).filter(Boolean).length || 0;
+
+      const storyWords = storiesDataRes.data?.reduce((acc, item) => acc + countWords(item.content), 0) || 0;
+      const poemWords = poemsDataRes.data?.reduce((acc, item) => acc + countWords(item.content), 0) || 0;
+      const chapterWords = chaptersDataRes.data?.reduce((acc, item) => acc + countWords(item.content), 0) || 0;
 
       setStats({
         diaryEntries: entriesRes.count || 0,
         writers: writersRes.count || 0,
-        wordsWritten: totalWords,
+        wordsWritten: storyWords + poemWords + chapterWords,
         totalStories: (storiesRes.count || 0) + (novelsRes.count || 0),
       });
     };
