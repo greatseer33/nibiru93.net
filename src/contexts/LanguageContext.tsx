@@ -11,9 +11,9 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
+const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('nibiru-language');
-    return (saved as Language) || 'en';
+    return (saved as Language) || 'ar';
   });
 
   const setLanguage = (lang: Language) => {
